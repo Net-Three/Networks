@@ -53,24 +53,117 @@ protected:
 	int numVertices;//目前顶点数目
 public:
 	int getVertexPos(int vertex)
-{
-	for (int i = 0; i < numVertices; i++)
 	{
-		if (NodeTable[i].id == vertex)
-			return i;//这个结点在第几排
-	}
+		for (int i = 0; i < numVertices; i++)
+		{
+			if (NodeTable[i].id == vertex)
+				return i;//这个结点在第几排
+		}
 
-}
-	   int getVertexPos(const Vertex vertex)
-	   {
-		   for (int i = 0; i < numVertices; i++)
-		   {
-			   if (NodeTable[i].id == vertex.id)
-				   return i;//这个结点在第几排
-		   }
-		   return -1;
-	   }
+	}
+	int getVertexPos(const Vertex vertex)
+	{
+		for (int i = 0; i < numVertices; i++)
+		{
+			if (NodeTable[i].id == vertex.id
+
+				)
+				return i;//这个结点在第几排
+		}
+		return -1;
+	}
+	bool removeVertex(int v);
+	bool removeEdge(int v1, int v2);
 };
+bool Graph::removeEdge(int v1,int v2)
+{
+	v1 = getVertexPos(v1);
+	v2 = getVertexPos(v2);
+	if (v1 != -1 && v2 != -1)
+	{
+		Edge *p = NodeTable[v1].adj, *q = NULL, *s = p;
+		while (p!=NULL&&p->dest!=v2)
+		{//q是p的上一个
+			q = p;
+			p = p->link;
+		}
+		//找到v2
+		if (p != NULL)
+		{//第一个结点就是v2
+			if (p == s)
+				NodeTable[v1].adj = p->link;
+			else
+				q->link = p->link;
+				delete p;
+		}//未找到
+		else return false;
+		//对称删除
+		p = NodeTable[v2].adj;
+		q = NULL, s = p;
+		while (p->dest != v1)
+		{
+			q = p;
+			p = p->link;
+		}
+		if (p == s)
+			NodeTable[v2].adj = p->link;
+		else
+			q->link = p->link;
+		delete p;
+		return true;
+	}
+	return false;
+}
+bool Graph::removeVertex(int v)
+{
+	if (numVertices == 1 || v < 0 || v >= numVertices) return false;
+	Edge *p, *s, *t;
+	int i, k;
+	while (NodeTable[v].adj != NULL)
+	{
+		p = NodeTable[v].adj;
+		k = p->dest;
+		s = NodeTable[k].adj;
+		t = NULL;
+		//依次删除边的过程
+		while (s != NULL&&s->dest != v)
+		{
+			t = s;
+			s = s->link;
+		}
+		if (s != NULL)
+		{
+			if (t == NULL)
+				NodeTable[k].adj = s->link;
+			else
+				t->link = s->link;
+			delete s;
+		}
+		NodeTable[v].adj = p->link;
+		delete p;
+		numEdges--;
+	}
+	numEdges--;
+	//置换，用最后一个结点覆盖当前结点
+	NodeTable[v].id = NodeTable[maxVertices].id;
+	NodeTable[v].name = NodeTable[maxVertices].name;
+	p=NodeTable[v].adj = NodeTable[maxVertices].adj;
+	while (p != NULL)
+	{
+		s = NodeTable[p->dest].adj;
+		while (s != NULL)
+		{
+			if (s->dest == numVertices)
+			{
+				s->dest = v;//更改边的链接点
+				break;
+			}
+			else
+				s = s->link;
+		}
+		return true;
+	}
+}
 Graph::Graph()
 {
 	maxVertices = 1000;
@@ -139,14 +232,20 @@ bool Graph::insertVertex(const Vertex& vertex)
 {
 	for (int i = 0; i < numVertices; i++)
 	{
-		if (NodeTable[i].id == vertex.id)
+		if (NodeTable[i].id == vertex.id
+
+			)
 			return false;//该结点已然存在
 	}
 	if (numVertices == maxVertices)return false;
 	else
 	{
-		NodeTable[numVertices].id = vertex.id;
-		NodeTable[numVertices].name = vertex.name;
+		NodeTable[numVertices].id = vertex.id
+
+			;
+		NodeTable[numVertices].name = vertex.name
+
+			;
 		NodeTable[numVertices].adj = NULL;
 		numVertices++;
 		return true;
@@ -163,7 +262,7 @@ bool Graph::insertEdge(int v1, int v2, double weight, int sign)//这里的v1 v2�
 		{
 			p = p->link;
 		}
-		if (p!=NULL)
+		if (p != NULL)
 		{
 			return false;
 		}
